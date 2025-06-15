@@ -32,32 +32,32 @@ It supports full CRUD operations and follows RESTful routing conventions.
 ## ⚙️ Installation
 
 1. Clone the repository:
-  ```bash
+  ```bash```
  git clone https://github.com/tinamanga/superheroes-API.git
  cd superheroes-API
 
 2. Create and activate virtual environment:
-```bash
+```bash```
  python3 -m venv venv
  source venv/bin/activate  # on Linux/macOS
  venv\Scripts\activate     # on Windows
 
 3. Install dependencies:
-```bash
+```bash```
    pip install -r requirements.
    
 4. Run migrations:
-```bash
+```bash```
   flask db init
   flask db migrate -m "Initial"
   flask db upgrade
 
 5. Seed the database:
-```bash
-   python seed.py
+```bash```
+   python app/seed.py
 
 6. Run the app:
-```bash
+```bash```
     flask run or
     python run.py
 
