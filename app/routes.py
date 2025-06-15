@@ -2,16 +2,16 @@ from flask import Blueprint, request, jsonify
 from . import db
 from .models import Hero, Power, HeroPower
 
-# Define blueprint
+# Defining blueprint
 api = Blueprint('api', __name__)
 
-# Get all heroes
+# Getting all heroes
 @api.route('/heroes', methods=['GET'])
 def get_heroes():
     heroes = Hero.query.all()
     return jsonify([h.to_dict() for h in heroes])
 
-# Get one hero by ID
+# Getting one hero by ID
 @api.route('/heroes/<int:id>', methods=['GET'])
 def get_hero(id):
     hero = Hero.query.get(id)
@@ -19,12 +19,12 @@ def get_hero(id):
         return jsonify({"error": "Hero not found"}), 404
     return jsonify(hero.to_dict())
 
-# Get all powers
+# Getting all powers
 @api.route('/powers', methods=['GET'])
 def get_powers():
     return jsonify([p.to_dict() for p in Power.query.all()])
 
-# Get one power by ID
+# Getting one power by ID
 @api.route('/powers/<int:id>', methods=['GET'])
 def get_power(id):
     power = Power.query.get(id)
@@ -32,7 +32,7 @@ def get_power(id):
         return jsonify({"error": "Power not found"}), 404
     return jsonify(power.to_dict())
 
-# Update a power description
+# Updating a power description
 @api.route('/powers/<int:id>', methods=['PATCH'])
 def update_power(id):
     power = Power.query.get(id)
@@ -52,7 +52,7 @@ def update_power(id):
     except Exception as e:
         return jsonify({"errors": [str(e)]}), 400
 
-# Create new hero_power
+# Creating new hero_power
 @api.route('/hero_powers', methods=['POST'])
 def create_hero_power():
     data = request.get_json()
