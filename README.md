@@ -32,32 +32,35 @@ It supports full CRUD operations and follows RESTful routing conventions.
 ## ⚙️ Installation
 
 1. Clone the repository:
-  ```bash```
+  ```bash
  git clone https://github.com/tinamanga/superheroes-API.git
  cd superheroes-API
 
 2. Create and activate virtual environment:
-```bash```
+```bash
  python3 -m venv venv
  source venv/bin/activate  # on Linux/macOS
  venv\Scripts\activate     # on Windows
+
 3. Install dependencies:
-```bash```
+```bash
    pip install -r requirements.
    
 4. Run migrations:
-```bash```
+```bash
   flask db init
   flask db migrate -m "Initial"
   flask db upgrade
 
 5. Seed the database:
-```bash```
-   python app/seed.py
+```bash
+   python seed.py
 
 6. Run the app:
-```bash```
-   flask run
+```bash
+    flask run or
+    python run.py
+
 App will be available at http://localhost:5555.
 
 ####  Usage
@@ -76,20 +79,27 @@ All responses return appropriate status codes (200, 201, 400, 404) and JSON-form
 
 ## Project Structure
 ```bash```
-.
-├── app
-│   ├── __init__.py
-│   ├── app.py
-│   ├── models.py
-│   ├── routes.py
-│   └── seed.py
-├── instance
-│   └── app.db
+superheroes-api/
+├── app/
+│   ├── __init__.py           # Initializes the Flask app and       database
+│   ├── models.py             # SQLAlchemy models and relationships
+│   ├── routes.py             # API route definitions
+│   └── seed.py               # Seed script to populate the database
+├── instance/
+│   └── app.db                # SQLite database (automatically created)
 ├── migrations/
-├── requirements.txt
-├── README.md
-├── manage.py
-└── superheros.json
+│   ├── alembic.ini
+│   ├── env.py
+│   ├── README
+│   ├── script.py.mako
+│   └── versions/             # Auto-generated migration scripts
+├── superheros.json           # Postman collection for testing
+├── run.py                    # App entry point (runs on port 5555)
+├── requirements.txt          # Python dependencies
+├── README.md                 # Project documentation
+├── LICENSE                   # License information
+└── venv/                     # Python virtual environment (excluded from Git)
+
 
 ## Features
 - Full CRUD API for Heroes and Powers
@@ -115,7 +125,6 @@ Uses Flask-Migrate for database versioning
 
 5. SQLite (can be switched to PostgreSQL or MySQL)
 
-6. Marshmallow ( used for serialization)
 
 ## API Testing with Postman
 
