@@ -1,59 +1,77 @@
-from flask import request, jsonify
-from app import app, db
-from app.models import Hero, Power, HeroPower
+from flask import Blueprint, request, jsonify
+from . import db
+from .models import Hero, Power, HeroPower
 
-@app.route('/heroes', methods=['GET'])
+# Define blueprint
+api = Blueprint('api', __name__)
+
+# Get all heroes
+@api.route('/heroes', methods=['GET'])
 def get_heroes():
     heroes = Hero.query.all()
-    return jsonify([{
-        "id": hero.id,
-        "name": hero.name,
-        "super_name": hero.super_name
-    } for hero in heroes])
+    return jsonify([h.to_dict() for h in heroes])
 
-@app.route('/heroes/<int:id>', methods=['GET'])
+# Get one hero by ID
+@api.route('/heroes/<int:id>', methods=['GET'])
 def get_hero(id):
     hero = Hero.query.get(id)
-    if hero:
-        return jsonify(hero.to_dict())
-    return jsonify({"error": "Hero not found"}), 404
+    if not hero:
+        return jsonify({"error": "Hero not found"}), 404
+    return jsonify(hero.to_dict())
 
-@app.route('/powers', methods=['GET'])
+# Get all powers
+@api.route('/powers', methods=['GET'])
 def get_powers():
-    powers = Power.query.all()
-    return jsonify([power.to_dict() for power in powers])
+    return jsonify([p.to_dict() for p in Power.query.all()])
 
-@app.route('/powers/<int:id>', methods=['GET'])
+# Get one power by ID
+@api.route('/powers/<int:id>', methods=['GET'])
 def get_power(id):
     power = Power.query.get(id)
-    if power:
-        return jsonify(power.to_dict())
-    return jsonify({"error": "Power not found"}), 404
+    if not power:
+        return jsonify({"error": "Power not found"}), 404
+    return jsonify(power.to_dict())
 
-@app.route('/powers/<int:id>', methods=['PATCH'])
+# Update a power description
+@api.route('/powers/<int:id>', methods=['PATCH'])
 def update_power(id):
     power = Power.query.get(id)
     if not power:
         return jsonify({"error": "Power not found"}), 404
+
+    data = request.get_json()
+    description = data.get("description")
+
+    if not description or len(description) < 20:
+        return jsonify({"errors": ["Description must be at least 20 characters long."]}), 400
+
     try:
-        data = request.get_json()
-        power.description = data.get('description')
+        power.description = description
         db.session.commit()
         return jsonify(power.to_dict())
-    except ValueError as e:
+    except Exception as e:
         return jsonify({"errors": [str(e)]}), 400
 
-@app.route('/hero_powers', methods=['POST'])
+# Create new hero_power
+@api.route('/hero_powers', methods=['POST'])
 def create_hero_power():
     data = request.get_json()
+
+    # Basic validation
+    required_fields = ["strength", "power_id", "hero_id"]
+    for field in required_fields:
+        if field not in data:
+            return jsonify({"errors": [f"Missing field: {field}"]}), 400
+
     try:
         new_hero_power = HeroPower(
-            strength=data.get('strength'),
-            power_id=data.get('power_id'),
-            hero_id=data.get('hero_id')
+            strength=data["strength"],
+            power_id=data["power_id"],
+            hero_id=data["hero_id"]
         )
         db.session.add(new_hero_power)
         db.session.commit()
         return jsonify(new_hero_power.to_dict()), 201
-    except ValueError as e:
+    except Exception as e:
+        db.session.rollback()
         return jsonify({"errors": [str(e)]}), 400
